@@ -59,6 +59,7 @@ class DatabaseManager:
             idPelicula INTEGER PRIMARY KEY AUTOINCREMENT,
             titulo TEXT NOT NULL,
             duracion INTEGER NOT NULL,
+            precioEntrada Real NOT NULL,
             idGenero INTEGER,
             idAudiencia INTEGER,
             FOREIGN KEY (idGenero) REFERENCES Genero(idGenero),
@@ -121,11 +122,6 @@ class DatabaseManager:
             FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
         );
         
-        CREATE TABLE IF NOT EXISTS Confite (
-            idConfite INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT,
-            precio REAL
-        );
         
         CREATE TABLE IF NOT EXISTS BoletaConfite (
             idBoleta INTEGER,
@@ -150,8 +146,8 @@ class DatabaseManager:
             
             INSERT INTO TipoAudiencia (descripcion) VALUES ('Toda Audiencia'), ('+14'), ('+18');
             
-            INSERT INTO Pelicula (titulo, duracion, idGenero, idAudiencia)
-            VALUES ('Matrix', 120, 1, 2), ('Toy Story', 90, 2, 1);
+            INSERT INTO Pelicula (titulo, duracion, precioEntrada, idGenero, idAudiencia)
+            VALUES ('Matrix', 120, 8500, 1, 2), ('Toy Story', 90, 7600, 2, 1);
             
             INSERT INTO Sala (nombreSala, capacidad)
             VALUES ('Sala 1', 100), ('Sala 2', 50);
@@ -161,9 +157,6 @@ class DatabaseManager:
             
             INSERT INTO Horario (idPelicula, idSala, fecha, hora)
             VALUES (1, 1, '2025-06-10', '18:00'), (2, 2, '2025-06-10', '16:00');
-            
-            INSERT INTO Confite (nombre, precio)
-            VALUES ('Popcorn', 3.50), ('Coca Cola', 2.00);
             
             INSERT INTO MetodoPago (descripcion) VALUES
             ('Efectivo'), ('Tarjeta Débito'), ('Tarjeta Crédito'), ('Transferencia'), ('Pago QR');

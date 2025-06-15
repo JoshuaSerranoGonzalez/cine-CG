@@ -408,3 +408,97 @@ class CinemaServices:
             conn.rollback()
             conn.close()
             return False
+        
+    def obtener_id_pelicula_por_horario(self, id_horario):
+        """Obtener el ID de película desde un horario específico"""
+        try:
+            conn = self.db_manager.conectar()
+            cursor = conn.cursor()
+            query = """
+            SELECT idPelicula 
+            FROM Horario 
+            WHERE idHorario = ?
+            """
+            cursor.execute(query, (id_horario,))
+            resultado = cursor.fetchone()
+            
+            if resultado:
+                return resultado[0]  # Retorna el idPelicula
+            else:
+                return None
+                
+        except sqlite3.Error as e:
+            print(f"Error al obtener ID de película por horario: {e}")
+            return None
+        finally:
+            cursor.close()
+
+    def obtener_id_pelicula_por_titulo(self, titulo):
+        """Obtener el ID de película por su título"""
+        try:
+            conn = self.db_manager.conectar()
+            cursor = conn.cursor()
+            query = """
+            SELECT idPelicula 
+            FROM Pelicula 
+            WHERE titulo = ?
+            """
+            cursor.execute(query, (titulo,))
+            resultado = cursor.fetchone()
+            
+            if resultado:
+                return resultado[0]  # Retorna el idPelicula
+            else:
+                return None
+                
+        except sqlite3.Error as e:
+            print(f"Error al obtener ID de película por título: {e}")
+            return None
+        finally:
+            cursor.close()
+
+    def obtener_precio_pelicula(self, id_pelicula):
+        """Obtener el precio de entrada de una película específica"""
+        try:
+            conn = self.db_manager.conectar()
+            cursor = conn.cursor()
+            query = """
+            SELECT precioEntrada 
+            FROM Pelicula 
+            WHERE idPelicula = ?
+            """
+            cursor.execute(query, (id_pelicula,))
+            resultado = cursor.fetchone()
+            
+            if resultado:
+                return resultado[0]  # Retorna el precio
+            else:
+                return None
+                
+        except sqlite3.Error as e:
+            print(f"Error al obtener precio de película: {e}")
+            return None
+        finally:
+            cursor.close()
+
+    def obtener_asientos_compra(self, id_horario):
+        conn = self.db_manager.conectar()
+        cursor = conn.cursor()
+        
+        query = """
+        SELECT a.idAsiento, a.codigo, s.nombreSala
+        FROM Asiento a
+        JOIN Sala s ON a.idSala = s.idSala
+        WHERE a.idSala = (
+            SELECT idSala FROM Horario WHERE idHorario = ?
+        )
+        AND a.idAsiento NOT IN (
+            SELECT idAsiento FROM Entrada WHERE idHorario = ?
+        )
+        ORDER BY a.codigo
+        """
+        cursor.execute(query, (id_horario, id_horario))
+        resultados = cursor.fetchall()
+        conn.close()
+    
+        return resultados    
