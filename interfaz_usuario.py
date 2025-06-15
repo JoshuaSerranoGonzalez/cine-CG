@@ -1,12 +1,19 @@
 from servicios_del_cine import CinemaServices
+import os
+
+def limpiar_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 class UserInterface:
     def __init__(self, cinema_services):
         self.cinema_services = cinema_services
         self.usuario_actual = None
+
+   
     
     def mostrar_menu_principal(self):
         """Mostrar menú principal"""
+        limpiar_terminal()
         print("\n" + "="*50)
         print("🎬 SISTEMA DE CINE 🎬")
         print("="*50)
@@ -17,29 +24,33 @@ class UserInterface:
     
     def mostrar_menu_cliente(self):
         """Mostrar menú para clientes"""
+        limpiar_terminal()
         print("\n" + "="*50)
         print(f"🎬 BIENVENIDO {self.usuario_actual[1]} 🎬")
         print("="*50)
         print("1. Ver cartelera")
         print("2. Comprar entrada")
         print("3. Ver mis boletas")
-        print("4. Cerrar sesión")
+        print("0. Cerrar sesión")
         print("-"*50)
     
     def mostrar_menu_administrador(self):
         """Mostrar menú para administradores"""
+        limpiar_terminal()
         print("\n" + "="*50)
         print(f"👑 PANEL DE ADMINISTRACIÓN - {self.usuario_actual[1]} 👑")
         print("="*50)
         print("1. Gestionar Películas")
         print("2. Gestionar Asientos")
         print("3. Gestionar Horarios")
-        print("4. Ver cartelera")
-        print("5. Cerrar sesión")
+        print("4. Comprar entrada")
+        print("5. Ver cartelera")
+        print("0 Cerrar sesión")
         print("-"*50)
     
     def gestionar_peliculas(self):
         """Gestionar películas"""
+        limpiar_terminal()
         while True:
             print("\n" + "="*50)
             print("🎬 GESTIÓN DE PELÍCULAS 🎬")
@@ -62,6 +73,7 @@ class UserInterface:
     
     def agregar_pelicula(self):
         """Agregar una nueva película"""
+        limpiar_terminal()
         print("\n=== AGREGAR PELÍCULA ===")
         titulo = input("Título de la película: ")
         duracion = input("Duración (en minutos): ")
@@ -95,6 +107,7 @@ class UserInterface:
     
     def ver_peliculas(self):
         """Ver lista de películas"""
+        limpiar_terminal()
         peliculas = self.cinema_services.obtener_peliculas()
         
         if not peliculas:
@@ -112,6 +125,7 @@ class UserInterface:
     
     def gestionar_asientos(self):
         """Gestionar asientos"""
+        limpiar_terminal()
         while True:
             print("\n" + "="*50)
             print("🪑 GESTIÓN DE ASIENTOS 🪑")
@@ -134,6 +148,7 @@ class UserInterface:
     
     def ver_asientos_sala(self):
         """Ver asientos por sala"""
+        limpiar_terminal()
         salas = self.cinema_services.obtener_salas()
         
         if not salas:
@@ -166,6 +181,7 @@ class UserInterface:
     
     def eliminar_asiento(self):
         """Eliminar un asiento"""
+        limpiar_terminal()
         self.ver_asientos_sala()
         
         try:
@@ -181,6 +197,7 @@ class UserInterface:
     
     def gestionar_horarios(self):
         """Gestionar horarios"""
+        limpiar_terminal()
         while True:
             print("\n" + "="*50)
             print("⏰ GESTIÓN DE HORARIOS ⏰")
@@ -206,6 +223,7 @@ class UserInterface:
     
     def agregar_horario(self):
         """Agregar un nuevo horario"""
+        limpiar_terminal()
         print("\n=== AGREGAR HORARIO ===")
         
         # Mostrar películas
@@ -235,6 +253,7 @@ class UserInterface:
     
     def ver_horarios(self):
         """Ver todos los horarios"""
+        limpiar_terminal()
         horarios = self.cinema_services.obtener_horarios()
         
         if not horarios:
@@ -252,6 +271,7 @@ class UserInterface:
     
     def eliminar_horario(self):
         """Eliminar un horario"""
+        limpiar_terminal()
         self.ver_horarios()
         
         try:
@@ -267,6 +287,7 @@ class UserInterface:
     
     def iniciar_sesion(self):
         """Proceso de inicio de sesión"""
+        limpiar_terminal()
         print("\n=== INICIAR SESIÓN ===")
         nombre_usuario = input("Usuario: ")
         clave = input("Contraseña: ")
@@ -283,6 +304,7 @@ class UserInterface:
     
     def mostrar_cartelera(self):
         """Mostrar películas y horarios"""
+        limpiar_terminal()
         print("\n" + "="*80)
         print("🎭 CARTELERA 🎭")
         print("="*80)
@@ -301,6 +323,7 @@ class UserInterface:
     
     def seleccionar_asientos(self):
         """Proceso de selección de asientos y compra"""
+        limpiar_terminal()
         self.mostrar_cartelera()
         
         try:
@@ -312,15 +335,41 @@ class UserInterface:
                 print("❌ Horario no encontrado")
                 return
             
-            print(f"\n🎬 {info_horario[0]} - {info_horario[1]} {info_horario[2]} - {info_horario[3]}")
+            try:
+                pelicula_titulo = info_horario[0] if len(info_horario) > 0 else "Película"
+                fecha = info_horario[1] if len(info_horario) > 1 else "Fecha"
+                hora = info_horario[2] if len(info_horario) > 2 else "Hora"
+                sala = info_horario[3] if len(info_horario) > 3 else "Sala"
+                
+                print(f"\n🎬 {pelicula_titulo} - {fecha} {hora} - {sala}")
+                
+                # Obtener ID de película de forma segura
+                if len(info_horario) > 4:
+                    id_pelicula = info_horario[4]
+                else:
+                    # Método alternativo para obtener el ID de película
+                    # Necesitarás implementar este método en servicios_del_cine.py
+                    id_pelicula = self.cinema_services.obtener_id_pelicula_por_titulo(pelicula_titulo)
+                    
+            except Exception as e:
+                print(f"❌ Error al procesar información del horario: {e}")
+                return
             
+            
+            precio = self.cinema_services.obtener_precio_pelicula(id_pelicula)
+
+            if precio is None:
+                print("❌ No se pudo obtener el precio de la película")
+                return
+        
+            # Resto del código permanece igual...
             # Mostrar asientos disponibles
-            asientos = self.cinema_services.ver_asientos_disponibles(id_horario)
-            
+            asientos = self.cinema_services.obtener_asientos_compra(id_horario)
+        
             if not asientos:
                 print("❌ No hay asientos disponibles para esta función")
                 return
-            
+
             print("\n🪑 ASIENTOS DISPONIBLES:")
             print(f"{'ID':<4} {'ASIENTO':<8} {'SALA':<10}")
             print("-"*25)
@@ -336,8 +385,8 @@ class UserInterface:
             if not asiento_valido:
                 print("❌ Asiento no válido o no disponible")
                 return
-            
-            precio = 8.50
+        
+
             print(f"\n💰 Precio de la entrada: ${precio}")
             
             # Confirmar compra
@@ -356,6 +405,7 @@ class UserInterface:
     
     def procesar_compra(self, id_horario, id_asiento, precio):
         """Procesar la compra de entrada"""
+        limpiar_terminal()
         # Comprar entrada
         id_entrada, mensaje = self.cinema_services.comprar_entrada(
             id_horario, self.usuario_actual[0], id_asiento, precio
@@ -401,6 +451,7 @@ class UserInterface:
     
     def mostrar_boleta(self, id_boleta):
         """Mostrar información de la boleta"""
+        limpiar_terminal()
         boleta = self.cinema_services.ver_boleta_completa(id_boleta)
         
         if not boleta:
@@ -425,6 +476,7 @@ class UserInterface:
     
     def ver_mis_boletas(self):
         """Ver boletas del usuario actual"""
+        limpiar_terminal()
         print("\n=== MIS BOLETAS ===")
         id_boleta = input("Ingresa el número de boleta (o 'q' para volver): ")
         
@@ -438,6 +490,7 @@ class UserInterface:
     
     def ejecutar(self):
         """Ejecutar el programa principal"""
+        limpiar_terminal()
         print("🎬 ¡Bienvenido al Sistema de Cine! 🎬")
         
         while True:
@@ -450,7 +503,7 @@ class UserInterface:
                 elif opcion == "2":
                     self.mostrar_cartelera()
                     input("\nPresiona Enter para continuar...")
-                elif opcion == "3":
+                elif opcion == "0":
                     print("¡Hasta luego! 👋")
                     break
                 else:
@@ -468,10 +521,13 @@ class UserInterface:
                         self.gestionar_asientos()
                     elif opcion == "3":
                         self.gestionar_horarios()
-                    elif opcion == "4":
+                    elif opcion == "5":
                         self.mostrar_cartelera()
                         input("\nPresiona Enter para continuar...")
-                    elif opcion == "5":
+                    elif opcion == "4":
+                        self.seleccionar_asientos()
+                        input("\nPresiona Enter para continuar...")
+                    elif opcion == "0":
                         print(f"¡Hasta luego {self.usuario_actual[1]}! 👋")
                         self.usuario_actual = None
                     else:
