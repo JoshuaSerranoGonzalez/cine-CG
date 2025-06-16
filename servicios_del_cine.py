@@ -12,7 +12,7 @@ class CinemaServices:
         cursor = conn.cursor()
         
         query = """
-        SELECT H.idHorario, P.titulo, H.fecha, H.hora, S.nombreSala
+        SELECT H.idHorario, P.titulo, H.fecha, H.hora, S.nombreSala, P.precioEntrada
         FROM Pelicula P
         JOIN Horario H ON P.idPelicula = H.idPelicula
         JOIN Sala S ON H.idSala = S.idSala
@@ -131,38 +131,33 @@ class CinemaServices:
             return None, f"Error al crear boleta: {e}"
     
     def ver_boleta_completa(self, id_boleta):
-        """Ver información completa de una boleta"""
-        conn = self.db_manager.conectar()
-        cursor = conn.cursor()
-        
-        query = """
-        SELECT 
-            B.idBoleta,
-            U.nombreUsuario,
-            P.titulo AS Pelicula,
-            H.fecha,
-            H.hora,
-            S.nombreSala,
-            A.codigo AS Asiento,
-            B.total,
-            B.fechaCompra,
-            MP.descripcion AS MetodoPago
-        FROM Boleta B
-        JOIN Entrada E ON B.idEntrada = E.idEntrada
-        JOIN Usuario U ON E.idUsuario = U.idUsuario
-        JOIN Horario H ON E.idHorario = H.idHorario
-        JOIN Pelicula P ON H.idPelicula = P.idPelicula
-        JOIN Sala S ON H.idSala = S.idSala
-        JOIN Asiento A ON E.idAsiento = A.idAsiento
-        JOIN MetodoPago MP ON B.idMetodoPago = MP.idMetodoPago
-        WHERE B.idBoleta = ?
-        """
-        
-        cursor.execute(query, (id_boleta,))
-        resultado = cursor.fetchone()
-        conn.close()
-        
-        return resultado
+        try:
+            conn = self.db_manager.conectar()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT B.idBoleta, u.nombreUsuario, M.descripcion, B.fechaCompra, B.total
+                FROM Boleta B
+                JOIN Usuario u ON u.idUsuario = (
+                    SELECT E.idUsuario FROM Entrada E
+                    JOIN BoletaEntrada BE ON BE.idEntrada = E.idEntrada
+                    WHERE BE.idBoleta = B.idBoleta LIMIT 1
+                )
+                JOIN MetodoPago M ON B.idMetodoPago = M.idMetodoPago
+                WHERE B.idBoleta = ?
+            """, (id_boleta,))
+            row = cursor.fetchone()
+            if row:
+                return {
+                    'id': row[0],
+                    'cliente': row[1],
+                    'metodo_pago': row[2],
+                    'fecha_compra': row[3],
+                    'total': row[4]
+                }
+            return None
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
     
     def obtener_usuarios(self):
         """Obtener lista de usuarios"""
@@ -226,16 +221,16 @@ class CinemaServices:
         
         return resultados
     
-    def agregar_pelicula(self, titulo, duracion, id_genero, id_audiencia):
+    def agregar_pelicula(self, titulo, duracion, precio, id_genero, id_audiencia):
         """Agregar una nueva película"""
         conn = self.db_manager.conectar()
         cursor = conn.cursor()
         
         try:
             cursor.execute("""
-                INSERT INTO Pelicula (titulo, duracion, idGenero, idAudiencia)
-                VALUES (?, ?, ?, ?)
-            """, (titulo, duracion, id_genero, id_audiencia))
+                INSERT INTO Pelicula (titulo, duracion, precioEntrada, idGenero, idAudiencia)
+                VALUES (?, ?, ?, ?, ?)
+            """, (titulo, duracion, precio,  id_genero, id_audiencia))
             
             conn.commit()
             conn.close()
@@ -256,6 +251,7 @@ class CinemaServices:
             P.idPelicula,
             P.titulo,
             P.duracion,
+            P.precioEntrada,
             G.nombreGenero,
             TA.descripcion
         FROM Pelicula P
@@ -501,4 +497,58 @@ class CinemaServices:
         resultados = cursor.fetchall()
         conn.close()
     
-        return resultados    
+        return resultados  
+
+    def crear_boleta_sin_entrada(self, id_metodo_pago, total):
+        try:
+            conn = self.db_manager.conectar()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO Boleta (idMetodoPago, total)
+                VALUES (?, ?)
+            """, (id_metodo_pago, total))
+            conn.commit()
+            return cursor.lastrowid, "Boleta creada con éxito."
+        except Exception as e:
+            return None, f"Error al crear boleta: {e}" 
+
+    def insertar_boleta_entrada(self, id_boleta, id_entrada):
+        try:
+            conn = self.db_manager.conectar()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO BoletaEntrada (idBoleta, idEntrada)
+                VALUES (?, ?)
+            """, (id_boleta, id_entrada))
+            conn.commit()
+        except Exception as e:
+            print(f"❌ Error al asociar entrada a boleta: {e}")   
+
+
+    def ver_entradas_de_boleta(self, id_boleta):
+        try:
+            conn = self.db_manager.conectar()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT P.titulo, H.fecha, H.hora, S.nombreSala, A.idAsiento
+                FROM BoletaEntrada BE
+                JOIN Entrada E ON BE.idEntrada = E.idEntrada
+                JOIN Horario H ON E.idHorario = H.idHorario
+                JOIN Pelicula P ON H.idPelicula = P.idPelicula
+                JOIN Sala S ON H.idSala = S.idSala
+                JOIN Asiento A ON E.idAsiento = A.idAsiento
+                WHERE BE.idBoleta = ?
+            """, (id_boleta,))
+            rows = cursor.fetchall()
+            return [
+                {
+                    'pelicula': r[0],
+                    'fecha': r[1],
+                    'hora': r[2],
+                    'sala': r[3],
+                    'asiento': r[4]
+                } for r in rows
+            ]
+        except Exception as e:
+            print(f"Error al obtener entradas: {e}")
+            return []          

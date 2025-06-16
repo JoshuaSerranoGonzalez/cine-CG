@@ -59,7 +59,7 @@ class DatabaseManager:
             idPelicula INTEGER PRIMARY KEY AUTOINCREMENT,
             titulo TEXT NOT NULL,
             duracion INTEGER NOT NULL,
-            precioEntrada Real NOT NULL,
+            precioEntrada INTEGER NOT NULL,
             idGenero INTEGER,
             idAudiencia INTEGER,
             FOREIGN KEY (idGenero) REFERENCES Genero(idGenero),
@@ -101,7 +101,7 @@ class DatabaseManager:
             idHorario INTEGER,
             idUsuario INTEGER,
             idAsiento INTEGER,
-            precio REAL,
+            precio INTEGER,
             FOREIGN KEY (idHorario) REFERENCES Horario(idHorario),
             FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
             FOREIGN KEY (idAsiento) REFERENCES Asiento(idAsiento)
@@ -117,20 +117,19 @@ class DatabaseManager:
             idEntrada INTEGER,
             idMetodoPago INTEGER,
             fechaCompra TEXT DEFAULT CURRENT_TIMESTAMP,
-            total REAL,
+            total INTEGER,
             FOREIGN KEY (idEntrada) REFERENCES Entrada(idEntrada),
             FOREIGN KEY (idMetodoPago) REFERENCES MetodoPago(idMetodoPago)
         );
-        
-        
-        CREATE TABLE IF NOT EXISTS BoletaConfite (
+
+        CREATE TABLE IF NOT EXISTS BoletaEntrada (
             idBoleta INTEGER,
-            idConfite INTEGER,
-            cantidad INTEGER,
-            PRIMARY KEY (idBoleta, idConfite),
+            idEntrada INTEGER,
+            PRIMARY KEY (idBoleta, idEntrada),
             FOREIGN KEY (idBoleta) REFERENCES Boleta(idBoleta),
-            FOREIGN KEY (idConfite) REFERENCES Confite(idConfite)
+            FOREIGN KEY (idEntrada) REFERENCES Entrada(idEntrada)
         );
+        
         """
         
         cursor.executescript(tablas_sql)
