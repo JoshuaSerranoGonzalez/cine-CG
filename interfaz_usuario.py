@@ -261,11 +261,11 @@ class UserInterface:
         print("\n" + "="*100)
         print("⏰ HORARIOS OCUPADOS ⏰")
         print("="*100)
-        print(f"{'ID':<4} {'PELÍCULA':<30} {'SALA':<10} {'FECHA':<12} {'HORA':<8}")
+        print(f"{'ID':<4} {'PELÍCULA':<30} {'SALA':<10} {'FECHA':<12} {'HORA':<8} {'ESTADO':<10} ")
         print("-"*100)
         
         for horario in horarios:
-            print(f"{horario[0]:<4} {horario[1]:<30} {horario[2]:<10} {horario[3]:<12} {horario[4]:<8}")
+            print(f"{horario[0]:<4} {horario[1]:<30} {horario[2]:<10} {horario[3]:<12} {horario[4]:<8} {horario[5]:10}")
         
         # Mostrar películas
         self.ver_peliculas()
@@ -303,11 +303,11 @@ class UserInterface:
         print("\n" + "="*100)
         print("⏰ HORARIOS DISPONIBLES ⏰")
         print("="*100)
-        print(f"{'ID':<4} {'PELÍCULA':<30} {'SALA':<10} {'FECHA':<12} {'HORA':<8}")
+        print(f"{'ID':<4} {'PELÍCULA':<30} {'SALA':<10} {'FECHA':<12} {'HORA':<8} {'ESTADO':<10} ")
         print("-"*100)
         
         for horario in horarios:
-            print(f"{horario[0]:<4} {horario[1]:<30} {horario[2]:<10} {horario[3]:<12} {horario[4]:<8}")
+            print(f"{horario[0]:<4} {horario[1]:<30} {horario[2]:<10} {horario[3]:<12} {horario[4]:<8} {horario[5]:10}")
     
     def eliminar_horario(self):
         """Eliminar un horario"""

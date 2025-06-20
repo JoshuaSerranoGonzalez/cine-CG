@@ -16,6 +16,7 @@ class CinemaServices:
         FROM Pelicula P
         JOIN Horario H ON P.idPelicula = H.idPelicula
         JOIN Sala S ON H.idSala = S.idSala
+        WHERE H.estado = 'Activo'
         ORDER BY H.fecha, H.hora
         """
         
@@ -66,7 +67,7 @@ class CinemaServices:
         FROM Horario H
         JOIN Pelicula P ON H.idPelicula = P.idPelicula
         JOIN Sala S ON H.idSala = S.idSala
-        WHERE H.idHorario = ?
+        WHERE H.idHorario = ? and estado = 'Activo'
         """
         
         cursor.execute(query, (id_horario,))
@@ -364,7 +365,8 @@ class CinemaServices:
             P.titulo,
             S.nombreSala,
             H.fecha,
-            H.hora
+            H.hora,
+            H.estado
         FROM Horario H
         JOIN Pelicula P ON H.idPelicula = P.idPelicula
         JOIN Sala S ON H.idSala = S.idSala
@@ -378,29 +380,23 @@ class CinemaServices:
         return resultados
     
     def eliminar_horario(self, id_horario):
-        """Eliminar un horario"""
+        """Marcar un horario como 'Cerrado' en lugar de eliminarlo"""
         conn = self.db_manager.conectar()
         cursor = conn.cursor()
-        
+
         try:
-            # Verificar si hay entradas vendidas para este horario
             cursor.execute("""
-                SELECT COUNT(*) FROM Entrada
+                UPDATE Horario
+                SET estado = 'Cerrado'
                 WHERE idHorario = ?
             """, (id_horario,))
-            
-            if cursor.fetchone()[0] > 0:
-                conn.close()
-                return False
-            
-            # Eliminar horario
-            cursor.execute("DELETE FROM Horario WHERE idHorario = ?", (id_horario,))
             
             conn.commit()
             conn.close()
             return True
-            
-        except sqlite3.Error:
+
+        except sqlite3.Error as e:
+            print(f"❌ Error al cerrar el horario: {e}")
             conn.rollback()
             conn.close()
             return False
@@ -413,7 +409,7 @@ class CinemaServices:
             query = """
             SELECT idPelicula 
             FROM Horario 
-            WHERE idHorario = ?
+            WHERE idHorario = ? and estado = 'Activo'
             """
             cursor.execute(query, (id_horario,))
             resultado = cursor.fetchone()

@@ -111,3 +111,89 @@ Traceback (most recent call last):
     cursor.executescript(datos_iniciales)
 sqlite3.OperationalError: foreign key mismatch - "Entrada" referencing "Asiento"
 2025-06-20 18:34:20,558 - INFO - Programa interrumpido por el usuario
+2025-06-20 19:05:09,920 - INFO - Programa interrumpido por el usuario
+2025-06-20 19:05:21,232 - ERROR - Error en la inicialización del sistema: 5 values for 4 columns
+Traceback (most recent call last):
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\main.py", line 43, in main
+    db_manager = DatabaseManager()
+                 ^^^^^^^^^^^^^^^^^
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\database_manager.py", line 6, in __init__
+    self.crear_base_datos()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\database_manager.py", line 33, in crear_base_datos
+    self._insertar_datos_iniciales(cursor)
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\database_manager.py", line 174, in _insertar_datos_iniciales
+    cursor.executescript(datos_iniciales)
+sqlite3.OperationalError: 5 values for 4 columns
+2025-06-20 19:06:11,160 - INFO - Programa interrumpido por el usuario
+2025-06-20 19:07:27,322 - ERROR - Error en la inicialización del sistema: near ".": syntax error
+Traceback (most recent call last):
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\main.py", line 57, in main
+    app.ejecutar()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 584, in ejecutar
+    self.gestionar_horarios()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 242, in gestionar_horarios
+    self.ver_horarios()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 297, in ver_horarios
+    horarios = self.cinema_services.obtener_horarios()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\servicios_del_cine.py", line 376, in obtener_horarios
+    cursor.execute(query)
+sqlite3.OperationalError: near ".": syntax error
+2025-06-20 19:08:55,732 - ERROR - Error en la inicialización del sistema: near "FROM": syntax error
+Traceback (most recent call last):
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\main.py", line 57, in main
+    app.ejecutar()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 584, in ejecutar
+    self.gestionar_horarios()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 242, in gestionar_horarios
+    self.ver_horarios()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 297, in ver_horarios
+    horarios = self.cinema_services.obtener_horarios()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\servicios_del_cine.py", line 376, in obtener_horarios
+    cursor.execute(query)
+sqlite3.OperationalError: near "FROM": syntax error
+2025-06-20 19:10:29,150 - ERROR - Error en la inicialización del sistema: near "FROM": syntax error
+Traceback (most recent call last):
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\main.py", line 57, in main
+    app.ejecutar()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 584, in ejecutar
+    self.gestionar_horarios()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 242, in gestionar_horarios
+    self.ver_horarios()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 297, in ver_horarios
+    horarios = self.cinema_services.obtener_horarios()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\servicios_del_cine.py", line 376, in obtener_horarios
+    cursor.execute(query)
+sqlite3.OperationalError: near "FROM": syntax error
+2025-06-20 19:11:11,398 - ERROR - Error en la inicialización del sistema: near "FROM": syntax error
+Traceback (most recent call last):
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\main.py", line 57, in main
+    app.ejecutar()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 584, in ejecutar
+    self.gestionar_horarios()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 242, in gestionar_horarios
+    self.ver_horarios()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 297, in ver_horarios
+    horarios = self.cinema_services.obtener_horarios()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\servicios_del_cine.py", line 376, in obtener_horarios
+    cursor.execute(query)
+sqlite3.OperationalError: near "FROM": syntax error
+2025-06-20 19:16:40,454 - INFO - Programa interrumpido por el usuario
+2025-06-20 19:17:14,975 - INFO - Programa interrumpido por el usuario
+2025-06-20 19:26:45,340 - ERROR - Error en la inicialización del sistema: near "h": syntax error
+Traceback (most recent call last):
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\main.py", line 57, in main
+    app.ejecutar()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 589, in ejecutar
+    self.seleccionar_asientos()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 368, in seleccionar_asientos
+    self.mostrar_cartelera()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\interfaz_usuario.py", line 353, in mostrar_cartelera
+    peliculas = self.cinema_services.ver_peliculas_horarios()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\servicios_del_cine.py", line 23, in ver_peliculas_horarios
+    cursor.execute(query)
+sqlite3.OperationalError: near "h": syntax error

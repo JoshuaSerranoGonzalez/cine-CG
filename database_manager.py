@@ -92,6 +92,7 @@ class DatabaseManager:
             idSala INTEGER,
             fecha TEXT,
             hora TEXT,
+            estado TEXT DEFAULT 'Activo',
             FOREIGN KEY (idPelicula) REFERENCES Pelicula(idPelicula),
             FOREIGN KEY (idSala) REFERENCES Sala(idSala)
         );
@@ -146,7 +147,7 @@ class DatabaseManager:
             INSERT INTO TipoAudiencia (descripcion) VALUES ('Toda Audiencia'), ('+14'), ('+18');
             
             INSERT INTO Pelicula (titulo, duracion, precioEntrada, idGenero, idAudiencia)
-            VALUES ('Matrix', 120, 8500, 1, 2), ('Toy Story', 90, 7600, 2, 1);
+            VALUES ('Matrix', 120, 8500, 1, 2), ('Toy Story', 90, 7600,2, 1);
             
             INSERT INTO Sala (nombreSala, capacidad)
             VALUES ('Sala 1', 100), ('Sala 2', 50);
@@ -154,8 +155,8 @@ class DatabaseManager:
             INSERT INTO Usuario (nombreUsuario, clave, tipoUsuario)
             VALUES ('juan123', 'pass123', 'Cliente'), ('admin1', 'adminpass', 'Administrador');
             
-            INSERT INTO Horario (idPelicula, idSala, fecha, hora)
-            VALUES (1, 1, '2025-06-10', '18:00'), (2, 2, '2025-06-10', '16:00');
+            INSERT INTO Horario (idPelicula, idSala, fecha, hora, estado)
+            VALUES (1, 1, '2025-06-10', '18:00', 'Activo'), (2, 2, '2025-06-10', '16:00', 'Activo');
             
             INSERT INTO MetodoPago (descripcion) VALUES
             ('Efectivo'), ('Tarjeta Débito'), ('Tarjeta Crédito'), ('Transferencia'), ('Pago QR');
