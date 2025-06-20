@@ -1,5 +1,8 @@
+from typing import Self
 from servicios_del_cine import CinemaServices
 import os
+import csv
+import sqlite3
 
 def limpiar_terminal():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -9,7 +12,13 @@ class UserInterface:
         self.cinema_services = cinema_services
         self.usuario_actual = None
 
-   
+    def exportar_csv(self, nombre_archivo, encabezados, datos):
+        """Exportar datos a archivo CSV"""
+        with open(nombre_archivo, mode='w', newline='', encoding='utf-8') as archivo:
+            escritor = csv.writer(archivo)
+            escritor.writerow(encabezados)
+            escritor.writerows(datos)
+        print(f"✅ Archivo '{nombre_archivo}' generado correctamente.\n")
     
     def mostrar_menu_principal(self):
         """Mostrar menú principal"""
@@ -45,34 +54,83 @@ class UserInterface:
         print("4. Comprar entrada")
         print("5. Ver cartelera")
         print("6. Ver Estadísticas")
-        print("0 Cerrar sesión")
+        print("0. Cerrar sesión")
         print("-"*50)
 
     def ver_estadisticas(self):
+        """Ver estadísticas y exportar a CSV"""
         limpiar_terminal()
-
-        print("\n=== ESTADÍSTICAS (Work in Progress)===")
+        conexion = sqlite3.connect('cine.db')  
+        cursor = conexion.cursor()
 
         while True:
-            print("1. Generos mas vistos")
-            print("2. Peliculas mas vistas")
-            print("3. Horarios mas concurridos")
-            print("3. Recaudación por pelicula")
-            print("4. volver")
+            print("\n=== ESTADÍSTICAS ===")
+            print("1. Géneros más vistos")
+            print("2. Películas más vistas")
+            print("3. Horarios más concurridos")
+            print("4. Recaudación por película")
+            print("5. Volver")
 
             opcion = input("Selecciona una opción: ")
 
             if opcion == "1":
-                print("❌ Función no implementada")
+                consulta = """
+                    SELECT G.nombreGenero, COUNT(*) as vistas
+                    FROM Entrada E
+                    JOIN Horario H ON E.idHorario = H.idHorario
+                    JOIN Pelicula P ON H.idPelicula = P.idPelicula
+                    JOIN Genero G ON P.idGenero = G.idGenero
+                    GROUP BY G.nombreGenero
+                    ORDER BY vistas DESC;
+                """
+                cursor.execute(consulta)
+                resultados = cursor.fetchall()
+                self.exportar_csv("generos_mas_vistos.csv", ["Genero", "Cantidad de vistas"], resultados)
+
             elif opcion == "2":
-                print("❌ Función no implementada")
+                consulta = """
+                    SELECT P.titulo, COUNT(*) as vistas
+                    FROM Entrada E
+                    JOIN Horario H ON E.idHorario = H.idHorario
+                    JOIN Pelicula P ON H.idPelicula = P.idPelicula
+                    GROUP BY P.titulo
+                    ORDER BY vistas DESC;
+                """
+                cursor.execute(consulta)
+                resultados = cursor.fetchall()
+                self.exportar_csv("peliculas_mas_vistas.csv", ["Película", "Cantidad de vistas"], resultados)
+
             elif opcion == "3":
-                print("❌ Función no implementada")
+                consulta = """
+                    SELECT H.hora, COUNT(*) as cantidad
+                    FROM Entrada E
+                    JOIN Horario H ON E.idHorario = H.idHorario
+                    GROUP BY H.hora
+                    ORDER BY cantidad DESC;
+                """
+                cursor.execute(consulta)
+                resultados = cursor.fetchall()
+                self.exportar_csv("horarios_mas_concurridos.csv", ["Hora", "Cantidad de entradas"], resultados)
+
             elif opcion == "4":
-                break 
+                consulta = """
+                    SELECT P.titulo, SUM(E.precio) as recaudacion
+                    FROM Entrada E
+                    JOIN Horario H ON E.idHorario = H.idHorario
+                    JOIN Pelicula P ON H.idPelicula = P.idPelicula
+                    GROUP BY P.titulo
+                    ORDER BY recaudacion DESC;
+                """
+                cursor.execute(consulta)
+                resultados = cursor.fetchall()
+                self.exportar_csv("recaudacion_por_pelicula.csv", ["Película", "Recaudación"], resultados)
+
+            elif opcion == "5":
+                break
             else:
                 print("❌ Opción inválida")
-                
+
+        conexion.close()
     
     def gestionar_peliculas(self):
         """Gestionar películas"""
@@ -399,7 +457,6 @@ class UserInterface:
                 return
             
             # ✅ Ahora simplemente llamamos a procesar la compra múltiple
-           
             self.procesar_compra(id_horario, precio)
             
         except ValueError:
@@ -407,7 +464,6 @@ class UserInterface:
         except Exception as e:
             print(f"❌ Error: {e}")
 
-    
     def procesar_compra(self, id_horario, precio_unitario):
         """Procesar la compra de múltiples entradas en una sola boleta"""
         id_entradas = []
@@ -417,25 +473,25 @@ class UserInterface:
 
             info_horario = self.cinema_services.obtener_info_horario(id_horario)
             if not info_horario:
-                    print("❌ Horario no encontrado")
-                    return
+                print("❌ Horario no encontrado")
+                return
                 
             try:
-                    pelicula_titulo = info_horario[0] if len(info_horario) > 0 else "Película"
-                    fecha = info_horario[1] if len(info_horario) > 1 else "Fecha"
-                    hora = info_horario[2] if len(info_horario) > 2 else "Hora"
-                    sala = info_horario[3] if len(info_horario) > 3 else "Sala"
+                pelicula_titulo = info_horario[0] if len(info_horario) > 0 else "Película"
+                fecha = info_horario[1] if len(info_horario) > 1 else "Fecha"
+                hora = info_horario[2] if len(info_horario) > 2 else "Hora"
+                sala = info_horario[3] if len(info_horario) > 3 else "Sala"
 
-                    print(f"\n🎬 {pelicula_titulo} - {fecha} {hora} - {sala}")
-                    
-                    if len(info_horario) > 4:
-                        id_pelicula = info_horario[4]
-                    else:
-                        id_pelicula = self.cinema_services.obtener_id_pelicula_por_titulo(pelicula_titulo)
+                print(f"\n🎬 {pelicula_titulo} - {fecha} {hora} - {sala}")
+                
+                if len(info_horario) > 4:
+                    id_pelicula = info_horario[4]
+                else:
+                    id_pelicula = self.cinema_services.obtener_id_pelicula_por_titulo(pelicula_titulo)
                         
             except Exception as e:
-                    print(f"❌ Error al procesar información del horario: {e}")
-                    return
+                print(f"❌ Error al procesar información del horario: {e}")
+                return
 
             asientos = self.cinema_services.obtener_asientos_compra(id_horario)
             if not asientos:
@@ -508,8 +564,6 @@ class UserInterface:
         except ValueError:
             print("❌ Método de pago inválido")
 
-    
-
     def mostrar_boleta(self, id_boleta):
         """Mostrar información completa de una boleta con múltiples entradas"""
         limpiar_terminal()
@@ -564,7 +618,7 @@ class UserInterface:
                 elif opcion == "2":
                     self.mostrar_cartelera()
                     input("\nPresiona Enter para continuar...")
-                elif opcion == "0":
+                elif opcion == "3":
                     print("¡Hasta luego! 👋")
                     break
                 else:
@@ -582,11 +636,11 @@ class UserInterface:
                         self.gestionar_asientos()
                     elif opcion == "3":
                         self.gestionar_horarios()
-                    elif opcion == "5":
-                        self.mostrar_cartelera()
-                        input("\nPresiona Enter para continuar...")
                     elif opcion == "4":
                         self.seleccionar_asientos()
+                        input("\nPresiona Enter para continuar...")
+                    elif opcion == "5":
+                        self.mostrar_cartelera()
                         input("\nPresiona Enter para continuar...")
                     elif opcion == "6":
                         self.ver_estadisticas()
