@@ -97,3 +97,17 @@ TypeError: ver_horarios() missing 1 required positional argument: 'self'
 2025-06-15 20:12:59,531 - INFO - Programa interrumpido por el usuario
 2025-06-15 20:24:15,807 - INFO - Programa interrumpido por el usuario
 2025-06-15 20:28:19,394 - INFO - Programa interrumpido por el usuario
+2025-06-20 18:23:36,648 - INFO - Programa interrumpido por el usuario
+2025-06-20 18:23:52,277 - ERROR - Error en la inicialización del sistema: foreign key mismatch - "Entrada" referencing "Asiento"
+Traceback (most recent call last):
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\main.py", line 43, in main
+    db_manager = DatabaseManager()
+                 ^^^^^^^^^^^^^^^^^
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\database_manager.py", line 6, in __init__
+    self.crear_base_datos()
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\database_manager.py", line 33, in crear_base_datos
+    self._insertar_datos_iniciales(cursor)
+  File "c:\Users\Ale\Desktop\Infórmatica\Repos\cine-CG\database_manager.py", line 173, in _insertar_datos_iniciales
+    cursor.executescript(datos_iniciales)
+sqlite3.OperationalError: foreign key mismatch - "Entrada" referencing "Asiento"
+2025-06-20 18:34:20,558 - INFO - Programa interrumpido por el usuario

@@ -530,7 +530,7 @@ class CinemaServices:
             conn = self.db_manager.conectar()
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT P.titulo, H.fecha, H.hora, S.nombreSala, A.idAsiento
+                SELECT P.titulo, H.fecha, H.hora, S.nombreSala, A.codigo
                 FROM BoletaEntrada BE
                 JOIN Entrada E ON BE.idEntrada = E.idEntrada
                 JOIN Horario H ON E.idHorario = H.idHorario
