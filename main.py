@@ -13,7 +13,7 @@ Estructura del proyecto:
 
 Usuarios de prueba:
 - Cliente: usuario 'juan123', contraseña 'pass123'
-- Admin: usuario 'admin1', contraseña 'adminpass adadada'
+- Admin: usuario 'admin1', contraseña 'adminpass '
 """
 
 import sys
